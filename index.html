@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DesignNDesk - Management System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#007bff">
+<link rel="icon" href="icon-192.png" type="image/png">
+
+
     <style>
         /* Base Styles */
         :root {
@@ -1501,7 +1507,7 @@ If you have any questions or need further assistance, feel free to contact us.
 
 Warm regards,
 DesingNDesk💼 (Saheb Ali)👦
-📧sahebali8474@gmail.com`;
+📧 sahebali8474@gmail.com`;
         
         const whatsappUrl = `https://wa.me/${client.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
@@ -2189,4 +2195,20 @@ Looking forward to working with you!`;
     window.deletePayment = deletePayment;
 </script>
 </body>
+</body>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js')
+        .then(function (registration) {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch(function (error) {
+          console.error('Service Worker registration failed:', error);
+        });
+    });
+  }
+</script>
+
 </html>
