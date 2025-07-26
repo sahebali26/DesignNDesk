@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DesignNDesk - Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles */
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f72585;
+            --gray-color: #6c757d;
+            --light-gray: #e9ecef;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Animated Header */
+        .animated-header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .letter {
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+            animation-delay: calc(0.1s * var(--i));
+            transform-origin: center bottom;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* Navigation */
+        .main-nav {
+            background-color: white;
+            padding: 1rem 0;
+            border-right: 1px solid var(--light-gray);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-btn {
+            padding: 0.8rem 1.5rem;
+            margin: 0.2rem 1rem;
+            border: none;
+            background: none;
+            color: var(--gray-color);
+            text-align: left;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-btn i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--light-gray);
+            color: var(--primary-color);
+        }
+
+        .nav-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 2rem;
+            overflow-y: auto;
+            height: calc(100vh - 120px);
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Dashboard Styles */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: var(--gray-color);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-actions button {
+            flex: 1;
+            min-width: 200px;
+            padding: 1rem;
+            background: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .quick-actions button:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .recent-activity {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .recent-activity h2 {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark-color);
+        }
+
+        #activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .activity-item {
+            padding: 0.8rem;
+            border-left: 3px solid var(--primary-color);
+            background: var(--light-gray);
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Client, Service, Payment Sections */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .section-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--dark-color);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box input {
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px 0 0 6px;
+            font-size: 0.9rem;
+            min-width: 250px;
+        }
+
+        .search-box button {
+            padding: 0.6rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            cursor: pointer;
+        }
+
+        .client-type-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .type-tab {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .type-tab:hover {
+            background: var(--light-gray);
+        }
+
+        .type-tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .filter-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-options select {
+            padding: 0.5rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .date-filter {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .date-filter input {
+            padding: 0.5rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .date-filter button {
+            padding: 0.5rem 1rem;
+            background: var(--light-gray);
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .client-card, .service-card, .payment-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .client-card:hover, .service-card:hover, .payment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .client-card h3, .service-card h3, .payment-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .client-card p, .service-card p, .payment-card p {
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .client-card .client-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .client-type {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .type-service-giving {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .type-service-taking {
+            background: #fff8e1;
+            color: #ff8f00;
+        }
+
+        .service-status {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-requested {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .status-in-progress {
+            background: #fff8e1;
+            color: #ff8f00;
+        }
+
+        .status-completed {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .status-delivered {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .service-deadline {
+            font-weight: bold;
+        }
+
+        .deadline-past {
+            color: #d32f2f;
+        }
+
+        .deadline-today {
+            color: #ff8f00;
+        }
+
+        .deadline-future {
+            color: #388e3c;
+        }
+
+        .payment-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .payment-stat-card h3 {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-stat-card p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .floating-action-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .floating-action-btn:hover {
+            background: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-color);
+        }
+
+        .close-modal:hover {
+            color: var(--dark-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .form-actions button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-actions button[type="submit"] {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .form-actions button[type="submit"]:hover {
+            background: var(--secondary-color);
+        }
+
+        .form-actions button[type="button"] {
+            background: var(--light-gray);
+            color: var(--dark-color);
+        }
+
+        .form-actions button[type="button"]:hover {
+            background: #d1d5db;
+        }
+
+        #payment-balance {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        /* Reports Section */
+        .report-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .report-controls select,
+        .report-controls input,
+        .report-controls button {
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .report-controls button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .report-controls button:hover {
+            background: var(--secondary-color);
+        }
+
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            height: 400px;
+        }
+
+        .report-table {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+        }
+
+        .report-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .report-table th {
+            background: var(--light-gray);
+            font-weight: 500;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-nav {
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 0.5rem;
+                border-right: none;
+                border-bottom: 1px solid var(--light-gray);
+            }
+            
+            .nav-btn {
+                padding: 0.5rem 1rem;
+                margin: 0.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .content-area {
+                height: auto;
+                min-height: calc(100vh - 180px);
+            }
+            
+            .floating-action-btn {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .search-box input {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                flex-direction: column;
+            }
+            
+            .quick-actions button {
+                width: 100%;
+            }
+            
+            .modal-content {
+                padding: 1.5rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .form-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Animated Header -->
+        <header class="animated-header">
+            <h1 class="logo-title">
+                <span class="letter">D</span>
+                <span class="letter">e</span>
+                <span class="letter">s</span>
+                <span class="letter">i</span>
+                <span class="letter">g</span>
+                <span class="letter">n</span>
+                <span class="letter">N</span>
+                <span class="letter">D</span>
+                <span class="letter">e</span>
+                <span class="letter">s</span>
+                <span class="letter">k</span>
+            </h1>
+            <p class="tagline">Your Creative Business Manager</p>
+        </header>
+
+        <!-- Main Navigation -->
+        <nav class="main-nav">
+            <button class="nav-btn active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+            <button class="nav-btn" data-section="clients"><i class="fas fa-users"></i> Clients</button>
+            <button class="nav-btn" data-section="payments"><i class="fas fa-rupee-sign"></i> Payments</button>
+            <button class="nav-btn" data-section="reports"><i class="fas fa-chart-bar"></i> Reports</button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h3>Total Clients</h3>
+                        <p id="total-clients">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Income</h3>
+                        <p id="total-income">₹0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Expense</h3>
+                        <p id="total-expenditure">₹0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Net Profit</h3>
+                        <p id="net-profit">₹0</p>
+                    </div>
+                </div>
+                
+                <div class="quick-actions">
+                    <button id="quick-add-client"><i class="fas fa-user-plus"></i> Add Client</button>
+                    <button id="quick-billing"><i class="fas fa-rupee-sign"></i> Billing</button>
+                </div>
+                
+                <div class="recent-activity">
+                    <h2><i class="fas fa-history"></i> Recent Payments</h2>
+                    <div id="activity-list"></div>
+                </div>
+            </section>
+
+            <!-- Clients Section -->
+            <section id="clients" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> Client Management</h2>
+                    <div class="search-box">
+                        <input type="text" id="client-search" placeholder="Search clients...">
+                        <button id="search-client-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                    <button id="add-client-btn" class="add-btn">
+                        <i class="fas fa-plus"></i> Add Client
+                    </button>
+                </div>
+                
+                <div id="client-list" class="card-grid"></div>
+            </section>
+
+            <!-- Payments Section -->
+            <section id="payments" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-rupee-sign"></i> Payment Tracking</h2>
+                    <div class="date-filter">
+                        <input type="month" id="payment-month-filter" value="">
+                        <button id="reset-date-filter">All Time</button>
+                    </div>
+                </div>
+                
+                <div class="payment-stats">
+                    <div class="payment-stat-card">
+                        <h3>Total Received</h3>
+                        <p id="total-received">₹0.00</p>
+                    </div>
+                    <div class="payment-stat-card">
+                        <h3>This Month</h3>
+                        <p id="month-received">₹0.00</p>
+                    </div>
+                    <div class="payment-stat-card">
+                        <h3>Outstanding</h3>
+                        <p id="payments-outstanding">₹0.00</p>
+                    </div>
+                </div>
+                
+                <div id="payment-list" class="card-grid"></div>
+            </section>
+
+            <!-- Reports Section -->
+            <section id="reports" class="content-section">
+                <h2><i class="fas fa-chart-bar"></i> Business Reports</h2>
+                
+                <div class="report-controls">
+                    <select id="report-type">
+                        <option value="monthly-income">Monthly Income</option>
+                        <option value="service-profit">Service Profitability</option>
+                        <option value="client-value">Client Value</option>
+                    </select>
+                    <input type="month" id="report-month" value="">
+                    <button id="generate-report">Generate Report</button>
+                    <button id="export-data">Export Data</button>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="report-chart"></canvas>
+                </div>
+                
+                <div id="report-results" class="report-table"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="client-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-client-title">Add New Client</h2>
+            <form id="client-form">
+                <input type="hidden" id="client-id">
+                <div class="form-group">
+                    <label for="client-name">Full Name*</label>
+                    <input type="text" id="client-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-whatsapp">WhatsApp Number*</label>
+                    <input type="tel" id="client-whatsapp" required>
+                </div>
+                <div class="form-group">
+                    <label for="client-email">Email</label>
+                    <input type="email" id="client-email">
+                </div>
+                <div class="form-group">
+                    <label for="client-type">Client Type*</label>
+                    <select id="client-type" required>
+                        <option value="service-giving">Service Giving (My Client)</option>
+                        <option value="service-taking">Service Taking (My Vendor)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="client-notes">Notes</label>
+                    <textarea id="client-notes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Save Client</button>
+                    <button type="button" id="send-welcome-btn">Send Welcome Message</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="billing-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Record Payment</h2>
+            <form id="billing-form">
+                <div class="form-group">
+                    <label for="billing-client">Client*</label>
+                    <select id="billing-client" required>
+                        <option value="">Select Client</option>
+                    <!-- Clients will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="billing-service">Service*</label>
+                    <select id="billing-service" required>
+                        <option value="">Select Service</option>
+                        <option value="graphic-design">Graphic Design</option>
+                        <option value="dtp">DTP (Word, Excel, PowerPoint)</option>
+                        <option value="3d-modeling">3D Modeling</option>
+                        <option value="online-services">Online Services</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="billing-amount">Amount (₹)*</label>
+                    <input type="number" id="billing-amount" required min="0" step="0.01">
+                    <p id="billing-balance">Service Price: ₹0.00 | Paid: ₹0.00 | Balance: ₹0.00</p>
+                </div>
+                <div class="form-group">
+                    <label for="billing-date">Date*</label>
+                    <input type="date" id="billing-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="billing-notes">Notes</label>
+                    <textarea id="billing-notes" rows="2"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">Save Payment</button>
+                    <button type="button" id="send-billing-receipt">Send WhatsApp</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Include Chart.js for reports -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Main Application
+    document.addEventListener('DOMContentLoaded', function() {
+        initApp();
+    });
+
+    // Global Variables
+    let clients = [];
+    let payments = [];
+    let currentPaymentMonth = '';
+    let chart = null;
+
+    // Initialize the Application
+    function initApp() {
+        loadAllData();
+        setupNavigation();
+        setupClientSection();
+        setupBilling();
+        setupPaymentSection();
+        setupReportSection();
+        setupModals();
+        setupQuickActions();
+        displayAllData();
+        showSection('dashboard');
+        initAnimatedLetters();
+    }
+
+    // Data Management
+    function loadAllData() {
+        const savedClients = localStorage.getItem('design-desk-clients');
+        const savedPayments = localStorage.getItem('design-desk-payments');
+        
+        if (savedClients) {
+            clients = JSON.parse(savedClients);
+        } else {
+            // Sample data for first-time users
+            clients = [
+                {
+                    id: '1',
+                    name: 'Sample Client',
+                    whatsapp: '+911234567890',
+                    email: 'sample@client.com',
+                    type: 'service-giving',
+                    joinDate: new Date().toISOString(),
+                    notes: 'Sample client for demonstration'
+                },
+                {
+                    id: '2',
+                    name: 'Freelance Designer',
+                    whatsapp: '+919876543210',
+                    email: 'designer@example.com',
+                    type: 'service-taking',
+                    joinDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                    notes: 'Freelancer for 3D work'
+                }
+            ];
+        }
+        
+        if (savedPayments) {
+            payments = JSON.parse(savedPayments);
+        } else {
+            payments = [
+                {
+                    id: '1001',
+                    clientId: '1',
+                    service: 'graphic-design',
+                    amount: 3000,
+                    date: new Date().toISOString(),
+                    notes: 'Advance payment'
+                },
+                {
+                    id: '1002',
+                    clientId: '2',
+                    service: '3d-modeling',
+                    amount: 4000,
+                    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                    notes: '50% advance'
+                }
+            ];
+        }
+        
+        saveAllData();
+    }
+
+    function saveAllData() {
+        localStorage.setItem('design-desk-clients', JSON.stringify(clients));
+        localStorage.setItem('design-desk-payments', JSON.stringify(payments));
+        addActivity('Data saved successfully');
+    }
+
+    function addActivity(message) {
+        const activityList = document.getElementById('activity-list');
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        const activityItem = document.createElement('div');
+        activityItem.className = 'activity-item';
+        activityItem.innerHTML = `<strong>${timeString}</strong> - ${message}`;
+        
+        activityList.insertBefore(activityItem, activityList.firstChild);
+        
+        if (activityList.children.length > 10) {
+            activityList.removeChild(activityList.lastChild);
+        }
+    }
+
+    // Navigation Setup
+    function setupNavigation() {
+        const navButtons = document.querySelectorAll('.nav-btn');
+        navButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showSection(section);
+                
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    }
+
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        document.getElementById(sectionId).classList.add('active');
+        
+        if (sectionId === 'dashboard') {
+            updateDashboardStats();
+        } else if (sectionId === 'clients') {
+            displayClients();
+        } else if (sectionId === 'payments') {
+            displayPayments();
+        }
+    }
+
+    // Animated Letters
+    function initAnimatedLetters() {
+        const letters = document.querySelectorAll('.letter');
+        letters.forEach((letter, index) => {
+            letter.style.setProperty('--i', index);
+        });
+    }
+
+    // Dashboard Functions
+    function updateDashboardStats() {
+        // Total Clients
+        document.getElementById('total-clients').textContent = clients.length;
+        
+        // Total Income (from service-giving clients)
+        const totalIncome = payments.reduce((total, payment) => {
+            const client = clients.find(c => c.id === payment.clientId);
+            if (client && client.type === 'service-giving') {
+                return total + payment.amount;
+            }
+            return total;
+        }, 0);
+        document.getElementById('total-income').textContent = `₹${totalIncome.toFixed(2)}`;
+        
+        // Total Expenditure (to service-taking clients)
+        const totalExpenditure = payments.reduce((total, payment) => {
+            const client = clients.find(c => c.id === payment.clientId);
+            if (client && client.type === 'service-taking') {
+                return total + payment.amount;
+            }
+            return total;
+        }, 0);
+        document.getElementById('total-expenditure').textContent = `₹${totalExpenditure.toFixed(2)}`;
+        
+        // Net Profit
+        const netProfit = totalIncome - totalExpenditure;
+        document.getElementById('net-profit').textContent = `₹${netProfit.toFixed(2)}`;
+        
+        // Update recent payments
+        updateRecentPayments();
+    }
+
+    function updateRecentPayments() {
+        const activityList = document.getElementById('activity-list');
+        activityList.innerHTML = '';
+        
+        const recentPayments = [...payments]
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 5);
+        
+        if (recentPayments.length === 0) {
+            activityList.innerHTML = '<p class="no-data">No recent payments</p>';
+            return;
+        }
+        
+        recentPayments.forEach(payment => {
+            const client = clients.find(c => c.id === payment.clientId);
+            if (!client) return;
+            
+            const paymentItem = document.createElement('div');
+            paymentItem.className = 'activity-item';
+            paymentItem.innerHTML = `
+                <strong>${formatDate(payment.date)}</strong> - 
+                ${client.name} paid ₹${payment.amount.toFixed(2)} for 
+                ${formatServiceType(payment.service)}
+                <span class="client-type type-${client.type}">
+                    ${client.type === 'service-giving' ? 'Income' : 'Expense'}
+                </span>
+            `;
+            activityList.appendChild(paymentItem);
+        });
+    }
+
+    // Client Section
+    function setupClientSection() {
+        document.getElementById('search-client-btn').addEventListener('click', searchClients);
+        document.getElementById('client-search').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') searchClients();
+        });
+        
+        document.getElementById('add-client-btn').addEventListener('click', openClientModal);
+        document.getElementById('quick-add-client').addEventListener('click', function() {
+            openClientModal();
+            showSection('clients');
+        });
+    }
+
+    function displayClients() {
+        const clientList = document.getElementById('client-list');
+        clientList.innerHTML = '';
+        
+        if (clients.length === 0) {
+            clientList.innerHTML = '<p class="no-data">No clients found</p>';
+            return;
+        }
+        
+        clients.forEach(client => {
+            const clientPayments = payments.filter(p => p.clientId === client.id);
+            const totalPaid = clientPayments.reduce((sum, payment) => sum + payment.amount, 0);
+            
+            const clientCard = document.createElement('div');
+            clientCard.className = 'client-card';
+            clientCard.innerHTML = `
+                <h3>${client.name}</h3>
+                <p><i class="fas fa-phone-alt"></i> ${client.whatsapp}</p>
+                ${client.email ? `<p><i class="fas fa-envelope"></i> ${client.email}</p>` : ''}
+                
+                <div class="client-meta">
+                    <span class="client-type type-${client.type}">
+                        ${client.type === 'service-giving' ? 'Client' : 'Vendor'}
+                    </span>
+                    <span>${clientPayments.length} payments</span>
+                </div>
+                
+                <div class="client-stats">
+                    <p>Total Paid: ₹${totalPaid.toFixed(2)}</p>
+                </div>
+                
+                <div class="client-actions">
+                    <button onclick="openClientModal('${client.id}')"><i class="fas fa-edit"></i> Edit</button>
+                    <button onclick="deleteClient('${client.id}')" class="delete-btn"><i class="fas fa-trash"></i> Delete</button>
+                    <button onclick="viewClientDetails('${client.id}')"><i class="fas fa-eye"></i> View</button>
+                </div>
+            `;
+            
+            clientList.appendChild(clientCard);
+        });
+    }
+
+    function searchClients() {
+        const searchTerm = document.getElementById('client-search').value.toLowerCase();
+        
+        if (!searchTerm) {
+            displayClients();
+            return;
+        }
+        
+        const filteredClients = clients.filter(client => 
+            client.name.toLowerCase().includes(searchTerm) || 
+            client.whatsapp.includes(searchTerm) ||
+            (client.email && client.email.toLowerCase().includes(searchTerm))
+        );
+        
+        const clientList = document.getElementById('client-list');
+        clientList.innerHTML = '';
+        
+        if (filteredClients.length === 0) {
+            clientList.innerHTML = '<p class="no-data">No matching clients found</p>';
+            return;
+        }
+        
+        filteredClients.forEach(client => {
+            const clientPayments = payments.filter(p => p.clientId === client.id);
+            const totalPaid = clientPayments.reduce((sum, payment) => sum + payment.amount, 0);
+            
+            const clientCard = document.createElement('div');
+            clientCard.className = 'client-card';
+            clientCard.innerHTML = `
+                <h3>${client.name}</h3>
+                <p><i class="fas fa-phone-alt"></i> ${client.whatsapp}</p>
+                ${client.email ? `<p><i class="fas fa-envelope"></i> ${client.email}</p>` : ''}
+                
+                <div class="client-meta">
+                    <span class="client-type type-${client.type}">
+                        ${client.type === 'service-giving' ? 'Client' : 'Vendor'}
+                    </span>
+                    <span>${clientPayments.length} payments</span>
+                </div>
+                
+                <div class="client-stats">
+                    <p>Total Paid: ₹${totalPaid.toFixed(2)}</p>
+                </div>
+                
+                <div class="client-actions">
+                    <button onclick="openClientModal('${client.id}')"><i class="fas fa-edit"></i> Edit</button>
+                    <button onclick="deleteClient('${client.id}')" class="delete-btn"><i class="fas fa-trash"></i> Delete</button>
+                    <button onclick="viewClientDetails('${client.id}')"><i class="fas fa-eye"></i> View</button>
+                </div>
+            `;
+            
+            clientList.appendChild(clientCard);
+        });
+    }
+
+    function deleteClient(clientId) {
+        if (!confirm('Are you sure you want to delete this client and all their payment records?')) {
+            return;
+        }
+        
+        const client = clients.find(c => c.id === clientId);
+        if (!client) return;
+        
+        // Delete all payments associated with this client
+        payments = payments.filter(p => p.clientId !== clientId);
+        
+        // Delete the client
+        clients = clients.filter(c => c.id !== clientId);
+        
+        saveAllData();
+        displayAllData();
+        updateDashboardStats();
+        
+        addActivity(`Deleted client: ${client.name} and all associated payments`);
+    }
+
+    function viewClientDetails(clientId) {
+        const client = clients.find(c => c.id === clientId);
+        if (!client) return;
+        
+        const clientPayments = payments.filter(p => p.clientId === clientId);
+        
+        let paymentHistory = '';
+        if (clientPayments.length === 0) {
+            paymentHistory = '<p>No payment history found.</p>';
+        } else {
+            paymentHistory = clientPayments
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(payment => `
+                    <div class="payment-item">
+                        <strong>${formatDate(payment.date)}</strong> - 
+                        ${formatServiceType(payment.service)}: ₹${payment.amount.toFixed(2)}
+                        ${payment.notes ? `<br><small>${payment.notes}</small>` : ''}
+                        <button onclick="sendPaymentReceipt('${clientId}', '${payment.id}')">
+                            <i class="fas fa-paper-plane"></i> Send Receipt
+                        </button>
+                    </div>
+                `)
+                .join('');
+        }
+        
+        const totalPaid = clientPayments.reduce((sum, payment) => sum + payment.amount, 0);
+        
+        const modalContent = `
+            <div class="client-detail-modal">
+                <h2>${client.name}</h2>
+                <p><strong>WhatsApp:</strong> ${client.whatsapp}</p>
+                ${client.email ? `<p><strong>Email:</strong> ${client.email}</p>` : ''}
+                <p><strong>Type:</strong> ${client.type === 'service-giving' ? 'Service Giving (My Client)' : 'Service Taking (My Vendor)'}</p>
+                <p><strong>Joined:</strong> ${formatDate(client.joinDate)}</p>
+                
+                <h3>Payment History (${clientPayments.length})</h3>
+                ${paymentHistory}
+                <p><strong>Total Paid:</strong> ₹${totalPaid.toFixed(2)}</p>
+                
+                <p><strong>Notes:</strong> ${client.notes || 'None'}</p>
+            </div>
+        `;
+        
+        // For simplicity, we'll use alert here. In a real app, you'd create a modal
+        alert(modalContent);
+    }
+
+    // Billing Functions
+    function setupBilling() {
+        document.getElementById('quick-billing').addEventListener('click', openBillingModal);
+        
+        const billingForm = document.getElementById('billing-form');
+        billingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveBilling();
+        });
+        
+        document.getElementById('send-billing-receipt').addEventListener('click', sendBillingReceipt);
+        
+        document.getElementById('billing-client').addEventListener('change', function() {
+            updateBillingBalanceInfo();
+        });
+    }
+
+    function openBillingModal() {
+        const modal = document.getElementById('billing-modal');
+        const form = document.getElementById('billing-form');
+        
+        form.reset();
+        document.getElementById('billing-date').value = new Date().toISOString().split('T')[0];
+        
+        const clientDropdown = document.getElementById('billing-client');
+        clientDropdown.innerHTML = '<option value="">Select Client</option>';
+        
+        clients.forEach(client => {
+            const option = document.createElement('option');
+            option.value = client.id;
+            option.textContent = `${client.name} (${client.type === 'service-giving' ? 'Client' : 'Vendor'})`;
+            clientDropdown.appendChild(option);
+        });
+        
+        modal.style.display = 'block';
+    }
+
+    function updateBillingBalanceInfo() {
+        const clientId = document.getElementById('billing-client').value;
+        
+        if (!clientId) {
+            document.getElementById('billing-balance').textContent = 
+                'Service Price: ₹0.00 | Paid: ₹0.00 | Balance: ₹0.00';
+            return;
+        }
+        
+        const clientPayments = payments.filter(p => p.clientId === clientId);
+        const totalPaid = clientPayments.reduce((sum, payment) => sum + payment.amount, 0);
+        
+        // For simplicity, we'll assume a service price of total paid + 1000
+        // In a real app, you'd have service prices stored
+        const servicePrice = totalPaid + 1000;
+        const balance = servicePrice - totalPaid;
+        
+        document.getElementById('billing-balance').textContent = 
+            `Service Price: ₹${servicePrice.toFixed(2)} | Paid: ₹${totalPaid.toFixed(2)} | Balance: ₹${balance.toFixed(2)}`;
+        
+        if (balance > 0) {
+            document.getElementById('billing-amount').value = balance.toFixed(2);
+        }
+    }
+
+    function saveBilling() {
+        const clientId = document.getElementById('billing-client').value;
+        const service = document.getElementById('billing-service').value;
+        const amount = parseFloat(document.getElementById('billing-amount').value);
+        const date = document.getElementById('billing-date').value;
+        const notes = document.getElementById('billing-notes').value.trim();
+        
+        if (!clientId || !service || isNaN(amount) || !date) {
+            alert('Please fill in all required fields');
+            return;
+        }
+        
+        const client = clients.find(c => c.id === clientId);
+        if (!client) {
+            alert('Client not found');
+            return;
+        }
+        
+        const newPayment = {
+            id: Date.now().toString(),
+            clientId: clientId,
+            service: service,
+            amount: amount,
+            date: new Date(date).toISOString(),
+            notes: notes
+        };
+        
+        payments.push(newPayment);
+        saveAllData();
+        
+        addActivity(`Recorded payment of ₹${amount.toFixed(2)} from ${client.name} for ${formatServiceType(service)}`);
+        
+        updateDashboardStats();
+        document.getElementById('billing-modal').style.display = 'none';
+    }
+
+    function sendBillingReceipt() {
+        const clientId = document.getElementById('billing-client').value;
+        const service = document.getElementById('billing-service').value;
+        const amount = document.getElementById('billing-amount').value;
+        
+        if (!clientId || !service || !amount) {
+            alert('Please fill in client, service and amount first');
+            return;
+        }
+        
+        const client = clients.find(c => c.id === clientId);
+        if (!client) {
+            alert('Client not found');
+            return;
+        }
+        
+        const clientPayments = payments.filter(p => p.clientId === clientId);
+        const totalPaid = clientPayments.reduce((sum, payment) => sum + payment.amount, 0) + parseFloat(amount);
+        
+        // For simplicity, we'll assume a service price of total paid + 1000
+        const servicePrice = totalPaid + 1000;
+        const balance = servicePrice - totalPaid;
+        
+        const message = `Dear ${client.name},
+
+Payment Receipt:
+- Service: ${formatServiceType(service)}
+- Amount Paid: ₹${parseFloat(amount).toFixed(2)}
+- Total Paid: ₹${totalPaid.toFixed(2)}
+- Service Price: ₹${servicePrice.toFixed(2)}
+- Balance: ₹${balance.toFixed(2)}
+
+Thank you for your payment!`;
+        
+        const whatsappUrl = `https://wa.me/${client.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        
+        addActivity(`Sent payment receipt to ${client.name}`);
+    }
+
+    // Payment Section
+    function setupPaymentSection() {
+        document.getElementById('payment-month-filter').addEventListener('change', function() {
+            currentPaymentMonth = this.value;
+            displayPayments();
+        });
+        
+        document.getElementById('reset-date-filter').addEventListener('click', function() {
+            document.getElementById('payment-month-filter').value = '';
+            currentPaymentMonth = '';
+            displayPayments();
+        });
+    }
+
+    function displayPayments() {
+        const paymentList = document.getElementById('payment-list');
+        paymentList.innerHTML = '';
+        
+        let filteredPayments = [...payments];
+        if (currentPaymentMonth) {
+            const [year, month] = currentPaymentMonth.split('-');
+            filteredPayments = payments.filter(payment => {
+                const paymentDate = new Date(payment.date);
+                return paymentDate.getFullYear() === parseInt(year) && 
+                       paymentDate.getMonth() + 1 === parseInt(month);
+            });
+        }
+        
+        filteredPayments.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        updatePaymentStats(filteredPayments);
+        
+        if (filteredPayments.length === 0) {
+            paymentList.innerHTML = '<p class="no-data">No payments found</p>';
+            return;
+        }
+        
+        filteredPayments.forEach(payment => {
+            const client = clients.find(c => c.id === payment.clientId);
+            if (!client) return;
+            
+            const paymentCard = document.createElement('div');
+            paymentCard.className = 'payment-card';
+            
+            paymentCard.innerHTML = `
+                <div class="payment-header">
+                    <h3>${client.name}</h3>
+                    <span class="client-type type-${client.type}">
+                        ${client.type === 'service-giving' ? 'Income' : 'Expense'}
+                    </span>
+                </div>
+                
+                <p><strong>Service:</strong> ${formatServiceType(payment.service)}</p>
+                <p><strong>Amount:</strong> ₹${payment.amount.toFixed(2)}</p>
+                <p><strong>Date:</strong> ${formatDate(payment.date)}</p>
+                
+                ${payment.notes ? `<p><strong>Notes:</strong> ${payment.notes}</p>` : ''}
+                
+                <div class="payment-actions">
+                    <button onclick="sendPaymentReceipt('${payment.clientId}', '${payment.id}')">
+                        <i class="fas fa-paper-plane"></i> Resend Receipt
+                    </button>
+                </div>
+            `;
+            
+            paymentList.appendChild(paymentCard);
+        });
+    }
+
+    function updatePaymentStats(payments) {
+        const totalReceived = payments.reduce((sum, payment) => sum + payment.amount, 0);
+        document.getElementById('total-received').textContent = `₹${totalReceived.toFixed(2)}`;
+        
+        if (currentPaymentMonth) {
+            document.getElementById('month-received').textContent = `₹${totalReceived.toFixed(2)}`;
+        } else {
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            const monthlyReceived = payments.reduce((sum, payment) => {
+                const paymentDate = new Date(payment.date);
+                if (paymentDate.getMonth() === currentMonth && 
+                    paymentDate.getFullYear() === currentYear) {
+                    return sum + payment.amount;
+                }
+                return sum;
+            }, 0);
+            
+            document.getElementById('month-received').textContent = `₹${monthlyReceived.toFixed(2)}`;
+        }
+        
+        // For simplicity, we'll calculate outstanding as total potential income minus received
+        // In a real app, you'd have service prices stored
+        const totalPotentialIncome = clients
+            .filter(c => c.type === 'service-giving')
+            .length * 5000; // Assuming average service price of 5000
+        const totalOutstanding = totalPotentialIncome - 
+            payments.filter(p => {
+                const client = clients.find(c => c.id === p.clientId);
+                return client && client.type === 'service-giving';
+            })
+            .reduce((sum, p) => sum + p.amount, 0);
+        
+        document.getElementById('payments-outstanding').textContent = `₹${Math.max(0, totalOutstanding).toFixed(2)}`;
+    }
+
+    function sendPaymentReceipt(clientId, paymentId) {
+        const client = clients.find(c => c.id === clientId);
+        if (!client) return;
+        
+        const payment = payments.find(p => p.id === paymentId);
+        if (!payment) return;
+        
+        const clientPayments = payments.filter(p => p.clientId === clientId);
+        const totalPaid = clientPayments.reduce((sum, p) => sum + p.amount, 0);
+        
+        // For simplicity, we'll assume a service price of total paid + 1000
+        const servicePrice = totalPaid + 1000;
+        const balance = servicePrice - totalPaid;
+        
+        const message = `Dear ${client.name},
+
+Payment Receipt:
+- Service: ${formatServiceType(payment.service)}
+- Amount: ₹${payment.amount.toFixed(2)}
+- Date: ${formatDate(payment.date)}
+
+Payment Summary:
+- Total paid: ₹${totalPaid.toFixed(2)}
+- Total price: ₹${servicePrice.toFixed(2)}
+- Balance: ₹${balance.toFixed(2)}
+
+Thank you for your payment!`;
+        
+        const whatsappUrl = `https://wa.me/${client.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        
+        addActivity(`Resent payment receipt to ${client.name}`);
+    }
+
+    // Report Section
+    function setupReportSection() {
+        const now = new Date();
+        const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        document.getElementById('report-month').value = currentMonth;
+        
+        document.getElementById('generate-report').addEventListener('click', generateReport);
+        document.getElementById('export-data').addEventListener('click', exportData);
+    }
+
+    function generateReport() {
+        const reportType = document.getElementById('report-type').value;
+        const month = document.getElementById('report-month').value;
+        
+        if (chart) {
+            chart.destroy();
+        }
+        
+        const ctx = document.getElementById('report-chart').getContext('2d');
+        const reportResults = document.getElementById('report-results');
+        
+        if (reportType === 'monthly-income') {
+            generateMonthlyIncomeReport(ctx, reportResults, month);
+        } else if (reportType === 'service-profit') {
+            generateServiceProfitReport(ctx, reportResults, month);
+        } else if (reportType === 'client-value') {
+            generateClientValueReport(ctx, reportResults, month);
+        }
+    }
+
+    function generateMonthlyIncomeReport(ctx, reportResults, month) {
+        const months = [];
+        const incomeData = [];
+        const now = new Date();
+        
+        for (let i = 11; i >= 0; i--) {
+            const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            months.push(date.toLocaleDateString('default', { month: 'short', year: '2-digit' }));
+            
+            const monthIncome = payments.reduce((total, payment) => {
+                const paymentDate = new Date(payment.date);
+                if (paymentDate.getMonth() === date.getMonth() && 
+                    paymentDate.getFullYear() === date.getFullYear()) {
+                    const client = clients.find(c => c.id === payment.clientId);
+                    if (client && client.type === 'service-giving') {
+                        return total + payment.amount;
+                    }
+                }
+                return total;
+            }, 0);
+            
+            incomeData.push(monthIncome);
+        }
+        
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Monthly Income (₹)',
+                    data: incomeData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        let tableHTML = `
+            <h3>Monthly Income Report</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Income (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        months.forEach((month, index) => {
+            tableHTML += `
+                <tr>
+                    <td>${month}</td>
+                    <td>₹${incomeData[index].toFixed(2)}</td>
+                </tr>
+            `;
+        });
+        
+        tableHTML += `
+                </tbody>
+            </table>
+        `;
+        
+        reportResults.innerHTML = tableHTML;
+    }
+
+    function generateServiceProfitReport(ctx, reportResults, month) {
+        const serviceTypes = ['graphic-design', 'dtp', '3d-modeling', 'online-services', 'other'];
+        const labels = serviceTypes.map(formatServiceType);
+        const incomeData = [];
+        const costData = [];
+        const profitData = [];
+        
+        serviceTypes.forEach(type => {
+            const servicePayments = payments.filter(payment => payment.service === type);
+            
+            const totalIncome = servicePayments.reduce((total, payment) => {
+                const client = clients.find(c => c.id === payment.clientId);
+                if (client && client.type === 'service-giving') {
+                    return total + payment.amount;
+                }
+                return total;
+            }, 0);
+            
+            const totalCost = servicePayments.reduce((total, payment) => {
+                const client = clients.find(c => c.id === payment.clientId);
+                if (client && client.type === 'service-taking') {
+                    return total + payment.amount;
+                }
+                return total;
+            }, 0);
+            
+            incomeData.push(totalIncome);
+            costData.push(totalCost);
+            profitData.push(totalIncome - totalCost);
+        });
+        
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: incomeData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Cost',
+                        data: costData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Profit',
+                        data: profitData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        let tableHTML = `
+            <h3>Service Profitability Report</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service Type</th>
+                        <th>Income (₹)</th>
+                        <th>Cost (₹)</th>
+                        <th>Profit (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        labels.forEach((label, index) => {
+            tableHTML += `
+                <tr>
+                    <td>${label}</td>
+                    <td>₹${incomeData[index].toFixed(2)}</td>
+                    <td>₹${costData[index].toFixed(2)}</td>
+                    <td>₹${profitData[index].toFixed(2)}</td>
+                </tr>
+            `;
+        });
+        
+        tableHTML += `
+                </tbody>
+            </table>
+        `;
+        
+        reportResults.innerHTML = tableHTML;
+    }
+
+    function generateClientValueReport(ctx, reportResults, month) {
+        const clientData = clients
+            .filter(client => client.type === 'service-giving')
+            .map(client => {
+                const clientPayments = payments.filter(p => p.clientId === client.id);
+                const totalPaid = clientPayments.reduce((total, payment) => total + payment.amount, 0);
+                
+                // For simplicity, we'll assume client value is total paid + 1000
+                const totalValue = totalPaid + 1000;
+                const balance = totalValue - totalPaid;
+                
+                return {
+                    name: client.name,
+                    value: totalValue,
+                    paid: totalPaid,
+                    balance: balance
+                };
+            })
+            .sort((a, b) => b.value - a.value);
+        
+        const labels = clientData.map(client => client.name);
+        const valueData = clientData.map(client => client.value);
+        const paidData = clientData.map(client => client.paid);
+        const balanceData = clientData.map(client => client.balance);
+        
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Total Value',
+                        data: valueData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Paid',
+                        data: paidData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Balance',
+                        data: balanceData,
+                        backgroundColor: 'rgba(255, 159, 64, 0.7)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₹' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        let tableHTML = `
+            <h3>Client Value Report</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Total Value (₹)</th>
+                        <th>Paid (₹)</th>
+                        <th>Balance (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        clientData.forEach(client => {
+            tableHTML += `
+                <tr>
+                    <td>${client.name}</td>
+                    <td>₹${client.value.toFixed(2)}</td>
+                    <td>₹${client.paid.toFixed(2)}</td>
+                    <td>₹${client.balance.toFixed(2)}</td>
+                </tr>
+            `;
+        });
+        
+        tableHTML += `
+                </tbody>
+            </table>
+        `;
+        
+        reportResults.innerHTML = tableHTML;
+    }
+
+    function exportData() {
+        const data = {
+            clients: clients,
+            payments: payments,
+            exportedAt: new Date().toISOString()
+        };
+        
+        const dataStr = JSON.stringify(data, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        
+        const exportName = 'design-desk-data_' + new Date().toISOString().slice(0, 10) + '.json';
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportName);
+        linkElement.click();
+        
+        addActivity('Exported all data as JSON');
+    }
+
+    // Client Modal Functions
+    function setupModals() {
+        setupClientModal();
+        setupBillingModal();
+        
+        document.querySelectorAll('.close-modal').forEach(closeBtn => {
+            closeBtn.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+        
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+    }
+
+    function setupClientModal() {
+        const clientForm = document.getElementById('client-form');
+        
+        clientForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveClient();
+        });
+        
+        document.getElementById('send-welcome-btn').addEventListener('click', sendWelcomeFromModal);
+    }
+
+    function openClientModal(clientId) {
+        const modal = document.getElementById('client-modal');
+        const form = document.getElementById('client-form');
+        
+        if (clientId) {
+            const client = clients.find(c => c.id === clientId);
+            if (!client) return;
+            
+            document.getElementById('modal-client-title').textContent = 'Edit Client';
+            document.getElementById('client-id').value = client.id;
+            document.getElementById('client-name').value = client.name;
+            document.getElementById('client-whatsapp').value = client.whatsapp;
+            document.getElementById('client-email').value = client.email || '';
+            document.getElementById('client-type').value = client.type;
+            document.getElementById('client-notes').value = client.notes || '';
+        } else {
+            document.getElementById('modal-client-title').textContent = 'Add New Client';
+            form.reset();
+            document.getElementById('client-id').value = '';
+        }
+        
+        modal.style.display = 'block';
+    }
+
+    function saveClient() {
+        const form = document.getElementById('client-form');
+        const clientId = document.getElementById('client-id').value;
+        
+        const clientData = {
+            name: document.getElementById('client-name').value.trim(),
+            whatsapp: document.getElementById('client-whatsapp').value.trim(),
+            email: document.getElementById('client-email').value.trim(),
+            type: document.getElementById('client-type').value,
+            notes: document.getElementById('client-notes').value.trim(),
+            joinDate: new Date().toISOString()
+        };
+        
+        if (!clientData.name || !clientData.whatsapp) {
+            alert('Please fill in all required fields');
+            return;
+        }
+        
+        if (clientId) {
+            const index = clients.findIndex(c => c.id === clientId);
+            if (index !== -1) {
+                clientData.joinDate = clients[index].joinDate;
+                clients[index] = { ...clients[index], ...clientData };
+                addActivity(`Updated client: ${clientData.name}`);
+            }
+        } else {
+            clientData.id = Date.now().toString();
+            clients.push(clientData);
+            addActivity(`Added new client: ${clientData.name}`);
+        }
+        
+        saveAllData();
+        displayAllData();
+        document.getElementById('client-modal').style.display = 'none';
+    }
+
+    function sendWelcomeFromModal() {
+        const clientId = document.getElementById('client-id').value;
+        const clientName = document.getElementById('client-name').value.trim();
+        const whatsapp = document.getElementById('client-whatsapp').value.trim();
+        
+        if (!clientName || !whatsapp) {
+            alert('Please fill in client name and WhatsApp number first');
+            return;
+        }
+        
+        const message = `Hi ${clientName}, thank you for choosing DesignNDesk services!
+
+Here's our WhatsApp channel for updates: [YOUR_CHANNEL_LINK_HERE]
+We'd appreciate your feedback: [YOUR_REVIEW_LINK_HERE]
+
+Looking forward to working with you!`;
+        
+        const whatsappUrl = `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        
+        if (!clientId) {
+            document.getElementById('client-notes').value += '\n\nWelcome message sent on ' + new Date().toLocaleString();
+        }
+        
+        addActivity(`Sent welcome message to ${clientName}`);
+    }
+
+    function setupBillingModal() {
+        // Already set up in setupBilling()
+    }
+
+    // Quick Actions
+    function setupQuickActions() {
+        document.getElementById('quick-add-client').addEventListener('click', function() {
+            openClientModal();
+            showSection('clients');
+        });
+        
+        document.getElementById('quick-billing').addEventListener('click', function() {
+            if (clients.length === 0) {
+                alert('Please add clients first');
+                return;
+            }
+            openBillingModal();
+        });
+    }
+
+    // Helper Functions
+    function displayAllData() {
+        displayClients();
+        displayPayments();
+        updateDashboardStats();
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return 'Not set';
+        
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    function formatServiceType(type) {
+        const types = {
+            'graphic-design': 'Graphic Design',
+            'dtp': 'DTP Services',
+            '3d-modeling': '3D Modeling',
+            'online-services': 'Online Services',
+            'other': 'Other Service'
+        };
+        
+        return types[type] || type;
+    }
+
+    function formatPaymentMethod(method) {
+        const methods = {
+            'cash': 'Cash',
+            'upi': 'UPI',
+            'bank-transfer': 'Bank Transfer',
+            'card': 'Card',
+            'other': 'Other'
+        };
+        
+        return methods[method] || method;
+    }
+
+    // Make functions available globally for HTML onclick attributes
+    window.openClientModal = openClientModal;
+    window.viewClientDetails = viewClientDetails;
+    window.sendPaymentReceipt = sendPaymentReceipt;
+    window.deleteClient = deleteClient;
+</script>
+</body>
+</html>
