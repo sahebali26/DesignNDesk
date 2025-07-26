@@ -656,6 +656,57 @@
             font-weight: 500;
         }
 
+        /* Payment Actions */
+        .payment-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .payment-actions button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .payment-actions button i {
+            font-size: 0.8rem;
+        }
+
+        .payment-actions .resend-btn {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .payment-actions .resend-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .payment-actions .delete-btn {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .payment-actions .delete-btn:hover {
+            background-color: #d31658;
+        }
+
+        /* Footer */
+        .app-footer {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--dark-color);
+            color: white;
+            font-size: 0.9rem;
+        }
+
         /* Responsive Styles */
         @media (max-width: 992px) {
             .dashboard-container {
@@ -713,6 +764,10 @@
             .form-row {
                 flex-direction: column;
                 gap: 0;
+            }
+
+            .payment-actions {
+                flex-direction: column;
             }
         }
 
@@ -871,6 +926,11 @@
                 <div id="report-results" class="report-table"></div>
             </section>
         </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            &copy; All rights reserved DesignNDesk (Saheb Ali)
+        </footer>
     </div>
 
     <!-- Modals -->
@@ -937,7 +997,6 @@
                 <div class="form-group">
                     <label for="billing-amount">Amount (₹)*</label>
                     <input type="number" id="billing-amount" required min="0" step="0.01">
-                    <p id="billing-balance">Service Price: ₹0.00 | Paid: ₹0.00 | Balance: ₹0.00</p>
                 </div>
                 <div class="form-group">
                     <label for="billing-date">Date*</label>
@@ -1356,10 +1415,6 @@
         });
         
         document.getElementById('send-billing-receipt').addEventListener('click', sendBillingReceipt);
-        
-        document.getElementById('billing-client').addEventListener('change', function() {
-            updateBillingBalanceInfo();
-        });
     }
 
     function openBillingModal() {
@@ -1380,31 +1435,6 @@
         });
         
         modal.style.display = 'block';
-    }
-
-    function updateBillingBalanceInfo() {
-        const clientId = document.getElementById('billing-client').value;
-        
-        if (!clientId) {
-            document.getElementById('billing-balance').textContent = 
-                'Service Price: ₹0.00 | Paid: ₹0.00 | Balance: ₹0.00';
-            return;
-        }
-        
-        const clientPayments = payments.filter(p => p.clientId === clientId);
-        const totalPaid = clientPayments.reduce((sum, payment) => sum + payment.amount, 0);
-        
-        // For simplicity, we'll assume a service price of total paid + 1000
-        // In a real app, you'd have service prices stored
-        const servicePrice = totalPaid + 1000;
-        const balance = servicePrice - totalPaid;
-        
-        document.getElementById('billing-balance').textContent = 
-            `Service Price: ₹${servicePrice.toFixed(2)} | Paid: ₹${totalPaid.toFixed(2)} | Balance: ₹${balance.toFixed(2)}`;
-        
-        if (balance > 0) {
-            document.getElementById('billing-amount').value = balance.toFixed(2);
-        }
     }
 
     function saveBilling() {
@@ -1459,21 +1489,12 @@
             return;
         }
         
-        const clientPayments = payments.filter(p => p.clientId === clientId);
-        const totalPaid = clientPayments.reduce((sum, payment) => sum + payment.amount, 0) + parseFloat(amount);
-        
-        // For simplicity, we'll assume a service price of total paid + 1000
-        const servicePrice = totalPaid + 1000;
-        const balance = servicePrice - totalPaid;
-        
         const message = `Dear ${client.name},
 
 Payment Receipt:
 - Service: ${formatServiceType(service)}
-- Amount Paid: ₹${parseFloat(amount).toFixed(2)}
-- Total Paid: ₹${totalPaid.toFixed(2)}
-- Service Price: ₹${servicePrice.toFixed(2)}
-- Balance: ₹${balance.toFixed(2)}
+- Amount: ₹${parseFloat(amount).toFixed(2)}
+- Date: ${new Date(document.getElementById('billing-date').value).toLocaleDateString()}
 
 Thank you for your payment!`;
         
@@ -1542,14 +1563,40 @@ Thank you for your payment!`;
                 ${payment.notes ? `<p><strong>Notes:</strong> ${payment.notes}</p>` : ''}
                 
                 <div class="payment-actions">
-                    <button onclick="sendPaymentReceipt('${payment.clientId}', '${payment.id}')">
+                    <button class="resend-btn" onclick="sendPaymentReceipt('${payment.clientId}', '${payment.id}')">
                         <i class="fas fa-paper-plane"></i> Resend Receipt
+                    </button>
+                    <button class="delete-btn" onclick="deletePayment('${payment.id}')">
+                        <i class="fas fa-trash"></i> Delete
                     </button>
                 </div>
             `;
             
             paymentList.appendChild(paymentCard);
         });
+    }
+
+    function deletePayment(paymentId) {
+        if (!confirm('Are you sure you want to delete this payment record?')) {
+            return;
+        }
+        
+        const paymentIndex = payments.findIndex(p => p.id === paymentId);
+        if (paymentIndex === -1) return;
+        
+        const deletedPayment = payments[paymentIndex];
+        const client = clients.find(c => c.id === deletedPayment.clientId);
+        
+        payments.splice(paymentIndex, 1);
+        saveAllData();
+        displayPayments();
+        updateDashboardStats();
+        
+        if (client) {
+            addActivity(`Deleted payment of ₹${deletedPayment.amount.toFixed(2)} from ${client.name}`);
+        } else {
+            addActivity('Deleted a payment record');
+        }
     }
 
     function updatePaymentStats(payments) {
@@ -1574,19 +1621,18 @@ Thank you for your payment!`;
             document.getElementById('month-received').textContent = `₹${monthlyReceived.toFixed(2)}`;
         }
         
-        // For simplicity, we'll calculate outstanding as total potential income minus received
-        // In a real app, you'd have service prices stored
-        const totalPotentialIncome = clients
+        // Calculate outstanding payments (only for service-giving clients)
+        const outstandingPayments = clients
             .filter(c => c.type === 'service-giving')
-            .length * 5000; // Assuming average service price of 5000
-        const totalOutstanding = totalPotentialIncome - 
-            payments.filter(p => {
-                const client = clients.find(c => c.id === p.clientId);
-                return client && client.type === 'service-giving';
+            .map(client => {
+                const clientPayments = payments.filter(p => p.clientId === client.id);
+                const totalPaid = clientPayments.reduce((sum, p) => sum + p.amount, 0);
+                // For simplicity, we'll assume each client has an expected total of 5000
+                return Math.max(0, 5000 - totalPaid);
             })
-            .reduce((sum, p) => sum + p.amount, 0);
+            .reduce((sum, balance) => sum + balance, 0);
         
-        document.getElementById('payments-outstanding').textContent = `₹${Math.max(0, totalOutstanding).toFixed(2)}`;
+        document.getElementById('payments-outstanding').textContent = `₹${outstandingPayments.toFixed(2)}`;
     }
 
     function sendPaymentReceipt(clientId, paymentId) {
@@ -1596,24 +1642,12 @@ Thank you for your payment!`;
         const payment = payments.find(p => p.id === paymentId);
         if (!payment) return;
         
-        const clientPayments = payments.filter(p => p.clientId === clientId);
-        const totalPaid = clientPayments.reduce((sum, p) => sum + p.amount, 0);
-        
-        // For simplicity, we'll assume a service price of total paid + 1000
-        const servicePrice = totalPaid + 1000;
-        const balance = servicePrice - totalPaid;
-        
         const message = `Dear ${client.name},
 
 Payment Receipt:
 - Service: ${formatServiceType(payment.service)}
 - Amount: ₹${payment.amount.toFixed(2)}
 - Date: ${formatDate(payment.date)}
-
-Payment Summary:
-- Total paid: ₹${totalPaid.toFixed(2)}
-- Total price: ₹${servicePrice.toFixed(2)}
-- Balance: ₹${balance.toFixed(2)}
 
 Thank you for your payment!`;
         
@@ -2147,6 +2181,7 @@ Looking forward to working with you!`;
     window.viewClientDetails = viewClientDetails;
     window.sendPaymentReceipt = sendPaymentReceipt;
     window.deleteClient = deleteClient;
+    window.deletePayment = deletePayment;
 </script>
 </body>
 </html>
