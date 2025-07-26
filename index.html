@@ -1655,12 +1655,17 @@ DesingNDesk💼 (Saheb Ali)👦
         
         const message = `Dear ${client.name},
 
-Payment Receipt:
-- Service: ${formatServiceType(payment.service)}
-- Amount: ₹${payment.amount.toFixed(2)}
-- Date: ${formatDate(payment.date)}
+We’re pleased to inform you that we’ve successfully received your payment✅.
+- 💁‍♀️Service: ${formatServiceType(service)}
+- 💰Amount: ₹${parseFloat(amount).toFixed(2)}
+- 🗓Date: ${new Date(document.getElementById('billing-date').value).toLocaleDateString()}
 
-Thank you for your payment!`;
+Your transaction has been securely processed⭐
+If you have any questions or need further assistance, feel free to contact us.
+
+Warm regards,
+DesingNDesk💼 (Saheb Ali)👦
+📧 sahebali8474@gmail.com`;
         
         const whatsappUrl = `https://wa.me/${client.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
